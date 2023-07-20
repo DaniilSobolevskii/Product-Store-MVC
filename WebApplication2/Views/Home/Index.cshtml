@@ -1,0 +1,68 @@
+﻿@model IndexModel;
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_MyLayout";
+    var products = Model.Products;
+}
+<h1 class="text-center">Your Shop</h1>
+
+<div class="text-md-center">
+
+    <table>
+        <tr>
+            <th>id</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена за штуку</th>
+            <th>Количество</th>
+            <th>Действия</th>
+        </tr>
+        @for(var i =0; i< products.Count; i++)
+        {
+            <tr>
+                <td>@products[i].Id</td>
+                <td><div id="product_name_@i">@products[i].Name</div></td>
+                <td>@products[i].Description</td>
+                <td>@products[i].Price</td>
+                <td>@products[i].Count</td>
+                <td>
+                    <button onclick="onEdit(@i)">!</button>
+                    <form action="@Url.Action("GetProduct")" method="Get">
+                        <button type="submit" name="id" value="@products[i].Id">✎</button>
+                    </form>
+                    <form action="@Url.Action("DeleteProduct")" method="post">
+                        <button type="submit" onclick="alert('Удалить продукт?')" name="id" value="@products[i].Id">⌫</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+<div class ="align-content-around">
+    <form action="@Url.Action("CreateProduct")" method="Post">
+        <br>
+        Название:<br>
+        <input type='text' name="name" value=""><br>
+        Описание:<br>
+        <input type='text' name="description" value = ""><br>
+        Цена:<br>
+        <input type='text' name="price" value = ""><br>
+        Количество:<br>
+        <input type='text' name="count" value=""><br>
+       
+        <input type="submit" value="Create">
+    </form>
+</div>
+
+<script>
+ function onEdit(id){
+     
+     let element = document.getElementById(`product_name_${i}`)
+     element.innerHtml
+ }
+
+</script>
+@section Footer
+{
+    Мой копирайтинг
+}
