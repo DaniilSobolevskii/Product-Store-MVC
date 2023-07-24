@@ -1,4 +1,5 @@
-﻿@model IndexModel;
+﻿@using Microsoft.AspNetCore.Mvc.Routing
+@model IndexModel;
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_MyLayout";
@@ -22,22 +23,22 @@
             <tr>
                 <td>@products[i].Id</td>
                 <td><div id="product_name_@i">@products[i].Name</div></td>
-                <td>@products[i].Description</td>
-                <td>@products[i].Price</td>
-                <td>@products[i].Count</td>
+                <td><div id="product_description_@i">@products[i].Description</div></td>
+                <td><div id="product_price_@i">@products[i].Price</div></td>
+                <td><div id="product_count_@i">@products[i].Count</div></td>
                 <td>
-                    <button onclick="onEdit(@i)">!</button>
-                    <form action="@Url.Action("GetProduct")" method="Get">
-                        <button type="submit" name="id" value="@products[i].Id">✎</button>
-                    </form>
+                    <button id = "button_one_@i" onclick = "onEdit(@i)">✎</button>
                     <form action="@Url.Action("DeleteProduct")" method="post">
-                        <button type="submit" onclick="alert('Удалить продукт?')" name="id" value="@products[i].Id">⌫</button>
+                        <button id="button_two_@i" type="submit" onclick="alert('Удалить продукт?')" name="id" value="@products[i].Id">⌫</button>
                     </form>
+                    <button id = "button3_@i" hidden="hidden" type="submit" action="@Url.Action("PartUpgradeProduct")" name="product" value="@products[i]">hidden</button>
                 </td>
             </tr>
         }
     </table>
+    
 </div>
+
 <div class ="align-content-around">
     <form action="@Url.Action("CreateProduct")" method="Post">
         <br>
@@ -49,17 +50,69 @@
         <input type='text' name="price" value = ""><br>
         Количество:<br>
         <input type='text' name="count" value=""><br>
-       
+        <input hidden="hidden" type='number' name="id" value="@(products.Count+1)"><br>
         <input type="submit" value="Create">
     </form>
 </div>
 
 <script>
- function onEdit(id){
-     
-     let element = document.getElementById(`product_name_${i}`)
-     element.innerHtml
- }
+    function onEdit(id){
+       
+        let productName = document.getElementById(`product_name_${id}`);
+        let nameInput = document.createElement("input");
+        let name = productName.innerText;
+        nameInput.id = `product_name_${id}`;
+        nameInput.value = productName.innerText;
+        productName.innerHTML = "";
+        productName.appendChild(nameInput);
+        
+        let productDescription = document.getElementById(`product_description_${id}`);
+        let descriptionInput = document.createElement("input");
+        let description = productDescription.innerText;     
+        descriptionInput.id = `product_description_${id}`;
+        descriptionInput.value = productDescription.innerText;
+        productDescription.innerHTML = "";
+        productDescription.appendChild(descriptionInput);
+        
+        let productPrice= document.getElementById(`product_price_${id}`);
+        let priceInput = document.createElement("input");
+        let price = productPrice.innerText;
+        priceInput.id = `product_price_${id}`;
+        priceInput.value = productPrice.innerText;
+        productPrice.innerHTML = "";
+        productPrice.appendChild(priceInput);
+        
+     //   let button3 = document.getElementById(`button3_${id}`)
+     //   button3.hidden = false;
+    
+        let button = document.getElementById(`button_one_${id}`);
+        let buttonOk = document.createElement("button")
+        button.replaceWith(buttonOk)
+        buttonOk.innerHTML="ok";
+        buttonOk.onclick = function() 
+        {
+           productName.innerHTML = nameInput.value;
+           productDescription.innerText = descriptionInput.value;
+           productPrice.innerText = priceInput.value;
+           buttonOk.replaceWith(button);
+           buttonEsc.replaceWith(buttonTwo);
+          
+        }
+
+        let buttonTwo = document.getElementById(`button_two_${id}`);
+        let buttonEsc = document.createElement("button")
+        buttonTwo.replaceWith(buttonEsc)
+        buttonEsc.innerHTML="Esc";
+        buttonEsc.onclick = function()
+        {
+            productName.innerHTML = name;
+            productDescription.innerHTML = description;
+            productPrice.innerHTML = price;
+            buttonEsc.replaceWith(buttonTwo);
+            buttonOk.replaceWith(button);
+           
+        }
+}
 
 </script>
 @section Footer

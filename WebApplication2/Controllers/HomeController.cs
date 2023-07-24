@@ -48,7 +48,7 @@ public class HomeController : Controller
     [HttpPost("product")]
     public IActionResult CreateProduct([FromForm] Product product)
     {
-        product.Id = _products.Count;
+  
         _products.Add(product);
         return RedirectToAction("Index");
     }
@@ -58,17 +58,17 @@ public class HomeController : Controller
     public IActionResult GetProduct(int id)
     {
         var model = new IndexModel
-                {
-                    Products = _products,
-                    UpdateProduct= _products.Find(x => x.Id == id)
-                };
+          {
+              Products = _products,
+              UpdateProduct= _products.Find(x => x.Id == id)
+          };
       //  var model = _products.Find((x => x.Id == id));
         
         return View("Update",model);
     }
 
     [HttpPost("UpgradeProduct")]
-    public IActionResult UpgradeProduct([FromForm] Product product)
+    public IActionResult UpgradeProduct(Product product)
     {
         var updateProduct = _products.FirstOrDefault(x => x.Id == product.Id);
       //  var updateProduct =  _products[product.Id-1];
@@ -80,6 +80,7 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
 
+    
     [HttpPost]
     public IActionResult DeleteProduct(int id)
     {
@@ -89,6 +90,17 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
     
+    [HttpPost]
+    public IActionResult PartUpgradeProduct(Product product)
+    {
+        var updateProduct = _products.Find((x => x.Id == product.Id));
+        updateProduct.Name = product.Name;
+        updateProduct.Description = product.Description;
+        updateProduct.Count = product.Count;
+        updateProduct.Price = product.Price;
+        
+        return RedirectToAction("Index");
+    }
     
     
     public IActionResult Privacy()
