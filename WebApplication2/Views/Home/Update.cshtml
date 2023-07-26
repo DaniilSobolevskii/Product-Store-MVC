@@ -31,9 +31,8 @@
                     <form action="@Url.Action("GetProduct")" method="Get">
                         <button type="submit" name="id" value="@products[i].Id">✎</button>
                     </form>
-                    <form action="@Url.Action("DeleteProduct")" method="post">
-                        <button type="submit" onclick="alert('Удалить продукт?')" name="id" value="@products[i].Id">⌫</button>
-                    </form>
+                    <button onclick="delete(@i)">⌫</button>
+                   
                 </td>
             </tr>
         }

@@ -8,10 +8,10 @@ namespace WebApplication2.Controllers;
 public class HomeController : Controller
 {
     private static List<Product> _products = new()
-    {
+    {   
         new Product {Id= 1, Name= "Властелин колец", Description = "Книга", Price = 1250.4, Count = 2},
         new Product {Id= 2, Name= "Остров Проклятых", Description = "Фильм", Price = 2000, Count = 12},
-        new Product {Id= 3, Name= "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1}
+        //new Product {Id= 3, Name= "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1}
     };
 
     private string[] productName =
@@ -45,7 +45,8 @@ public class HomeController : Controller
         return View(model);
     }
 
-    [HttpPost("product")]
+
+   [HttpPost("product")]
     public IActionResult CreateProduct([FromForm] Product product)
     {
   
@@ -90,17 +91,7 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
     
-    [HttpPost]
-    public IActionResult PartUpgradeProduct(Product product)
-    {
-        var updateProduct = _products.Find((x => x.Id == product.Id));
-        updateProduct.Name = product.Name;
-        updateProduct.Description = product.Description;
-        updateProduct.Count = product.Count;
-        updateProduct.Price = product.Price;
-        
-        return RedirectToAction("Index");
-    }
+    
     
     
     public IActionResult Privacy()

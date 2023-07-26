@@ -4,6 +4,7 @@
     ViewData["Title"] = "Home Page";
     Layout = "_MyLayout";
     var products = Model.Products;
+ 
 }
 <h1 class="text-center">Your Shop</h1>
 
@@ -17,103 +18,254 @@
             <th>Цена за штуку</th>
             <th>Количество</th>
             <th>Действия</th>
+            
         </tr>
-        @for(var i =0; i< products.Count; i++)
+        
+        
+        
+        @for(var i =0; i< 20; i++)
         {
-            <tr>
-                <td>@products[i].Id</td>
-                <td><div id="product_name_@i">@products[i].Name</div></td>
-                <td><div id="product_description_@i">@products[i].Description</div></td>
-                <td><div id="product_price_@i">@products[i].Price</div></td>
-                <td><div id="product_count_@i">@products[i].Count</div></td>
+            <tr id = "tr_@(i)" hidden="hidden">
+                <td><div id="product_id_@(i)"></div></td>
+                <td><div id="product_name_@(i)"></div></td>
+                <td><div id="product_description_@(i)"></div></td>
+                <td><div id="product_price_@(i)"></div></td>
+                <td><div id="product_count_@(i)"></div></td>
                 <td>
-                    <button id = "button_one_@i" onclick = "onEdit(@i)">✎</button>
-                    <form action="@Url.Action("DeleteProduct")" method="post">
-                        <button id="button_two_@i" type="submit" onclick="alert('Удалить продукт?')" name="id" value="@products[i].Id">⌫</button>
-                    </form>
-                    <button id = "button3_@i" hidden="hidden" type="submit" action="@Url.Action("PartUpgradeProduct")" name="product" value="@products[i]">hidden</button>
+                    <button id = "button_one_@(i)" onclick = "onEdit(@i)">✎</button>
+                    <button onclick="deleteProduct(@i)">⌫</button>
                 </td>
             </tr>
-        }
+        }        
+        
     </table>
-    
+      
 </div>
 
 <div class ="align-content-around">
-    <form action="@Url.Action("CreateProduct")" method="Post">
-        <br>
-        Название:<br>
-        <input type='text' name="name" value=""><br>
+    <br>
+    Название:<br>
+        
+        <input id = "nameInput"type='text' name="name" value=""><br>
         Описание:<br>
-        <input type='text' name="description" value = ""><br>
+        <input id = "descriptionInput" type='text' name="description" value = ""><br>
         Цена:<br>
-        <input type='text' name="price" value = ""><br>
+        <input id = "priceInput" type='number' name="price" value = ""><br>
         Количество:<br>
-        <input type='text' name="count" value=""><br>
-        <input hidden="hidden" type='number' name="id" value="@(products.Count+1)"><br>
-        <input type="submit" value="Create">
-    </form>
+        <input id = "countInput" type='number' name="count" value=""><br>
+        <input id = "idInput" hidden="hidden" type='number' name="id" value="@(products.Count)"><br>
+   
+        <button onclick="addProduct()"> create</button>
+    
 </div>
 
 <script>
-    function onEdit(id){
+  
+   
+   async function index()
+    {
+      
+           let response = await fetch(`Product/getProducts`, 
+           {
+               method: "GET",
+               headers: {
+                 'Content-Type': 'application/json;charset=utf-8'
+               },
+            
+           });
+           let model = await response.json();
+           await showProducts(model);
+           
+    }
        
+   async function addProduct()
+    {
+        
+        let newProduct = CreateProduct();
+     
+        let response = await fetch(`Product/addProduct`, 
+        {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(newProduct)
+        });
+        let model = await response.json();
+        await showProducts(model);
+        
+    }
+    
+    async function showProducts(model)
+    {
+         
+          for (let i = 0; i< model.length; i++)
+          {
+              let product = model[i];
+              let tr = document.getElementById(`tr_${i}`);
+              tr.hidden= false;
+              setProduct(i,product)
+             
+          }
+          
+    }
+    
+    async function deleteProduct(id)
+    {
+        let response = await fetch(`Product/delete/${id}`, 
+             {
+                 method: "DELETE",
+                 headers: {
+                   'Content-Type': 'application/json;charset=utf-8'
+                 }
+                 
+             });
+        let tr = document.getElementById(`tr_${id}`);
+        tr.hidden = true;
+        
+            let model = await response.json();
+            await showProducts(model);
+    }
+       
+
+   
+    async function onRefresh(id){
+        
+        let response = await fetch(`Product/${id}`);
+        let product = await response.json();
+        
+        setProduct(id, product)
+    }
+    
+    function onEdit(id)
+    {
+       // создаем inputы
+        createInput("name",id);
+        createInput("description",id);
+        createInput("count",id);
+        createInput("price",id);
+        
+       // Создаем кнопку на месте старой и определяем ее
+        let editButton = document.getElementById(`button_one_${id}`);
+        let sendButton = document.createElement("button");
+        sendButton.id = `send_button_${id}`
+        sendButton.innerText="Ok";
+        sendButton.onclick =()=> { onSendUpdateClick(id)};
+        editButton.replaceWith(sendButton);
+        
+
+   }
+   
+    function createInput(elementName,id)
+    {
+        
+       let elementText = document.getElementById(`product_${elementName}_${id}`);
+       let elementInput = document.createElement("input");
+       elementInput.id = `product_${elementName}_input_${id}`;
+       elementInput.value = elementText.innerText;
+       elementText.innerHTML = "";
+       elementText.appendChild(elementInput);
+             
+   }
+        
+    async function onSendUpdateClick(id) 
+    {
+       let updatedProduct = getProduct(id);
+       let response = await fetch(`product/${id}`, 
+       {
+           method: "POST",
+           headers: {
+             'Content-Type': 'application/json;charset=utf-8'
+           },
+           body: JSON.stringify(updatedProduct)
+       });
+       
+       let updatedProductFromServer = await response.json();
+       setProduct(id, updatedProductFromServer)
+                      
+       let sendButton = document.getElementById(`send_button_${id}`);
+       
+       let editButton = document.createElement("button");
+       editButton.id = `button_one_${id}`;
+       editButton.innerText = "✎";
+       editButton.onclick = () => { onEdit(id); }
+       
+       sendButton.replaceWith(editButton);
+       await onRefresh(id);
+   }
+   
+   
+    function setProduct(id, product)
+    {
+        
         let productName = document.getElementById(`product_name_${id}`);
-        let nameInput = document.createElement("input");
-        let name = productName.innerText;
-        nameInput.id = `product_name_${id}`;
-        nameInput.value = productName.innerText;
-        productName.innerHTML = "";
-        productName.appendChild(nameInput);
+        productName.innerText = product.name;
         
         let productDescription = document.getElementById(`product_description_${id}`);
-        let descriptionInput = document.createElement("input");
-        let description = productDescription.innerText;     
-        descriptionInput.id = `product_description_${id}`;
-        descriptionInput.value = productDescription.innerText;
-        productDescription.innerHTML = "";
-        productDescription.appendChild(descriptionInput);
+        productDescription.innerText = product.description;
         
-        let productPrice= document.getElementById(`product_price_${id}`);
-        let priceInput = document.createElement("input");
-        let price = productPrice.innerText;
-        priceInput.id = `product_price_${id}`;
-        priceInput.value = productPrice.innerText;
-        productPrice.innerHTML = "";
-        productPrice.appendChild(priceInput);
+        let productPrice = document.getElementById(`product_price_${id}`);
+        productPrice.innerText = product.price;
         
-     //   let button3 = document.getElementById(`button3_${id}`)
-     //   button3.hidden = false;
+        let productCount = document.getElementById(`product_count_${id}`);
+        productCount.innerText = product.count;
+        
+        let productId = document.getElementById(`product_id_${id}`);
+        productId.innerText = product.id;
+    }
+   
+    function getProduct(id)
+    {
+        
+         let productNameInput = document.getElementById(`product_name_input_${id}`);
+         let name = productNameInput.value;
+         
+         let productDescriptionInput = document.getElementById(`product_description_input_${id}`);
+         let description =productDescriptionInput.value;
+         
+         let productPriceInput = document.getElementById(`product_price_input_${id}`);
+         let price =  productPriceInput.value;
+         
+         let productCountInput = document.getElementById(`product_count_input_${id}`);
+         let count= productCountInput.value;
+         
+         return {
+             id, 
+             name,
+             description,
+             price,
+             count
+         };
+    }
     
-        let button = document.getElementById(`button_one_${id}`);
-        let buttonOk = document.createElement("button")
-        button.replaceWith(buttonOk)
-        buttonOk.innerHTML="ok";
-        buttonOk.onclick = function() 
-        {
-           productName.innerHTML = nameInput.value;
-           productDescription.innerText = descriptionInput.value;
-           productPrice.innerText = priceInput.value;
-           buttonOk.replaceWith(button);
-           buttonEsc.replaceWith(buttonTwo);
-          
-        }
+    function CreateProduct(){
+        let nameInput = document.getElementById(`nameInput`);
+        let name = nameInput.value;
+        nameInput.value="";
+        
+        let descriptionInput = document.getElementById(`descriptionInput`);
+        let description = descriptionInput.value;
+        descriptionInput.value="";
+        
+        let priceInput = document.getElementById(`priceInput`);
+        let price =  priceInput.value;
+        priceInput.value="";
+        
+        let countInput = document.getElementById(`countInput`);
+        let count = countInput.value;
+        countInput.value="";
+        //let idInput = document.getElementById(`idInput`);
+       // let id = idInput.value; 
+        return {
+            name,
+            description,
+            price,
+            count
+            };
+    }
 
-        let buttonTwo = document.getElementById(`button_two_${id}`);
-        let buttonEsc = document.createElement("button")
-        buttonTwo.replaceWith(buttonEsc)
-        buttonEsc.innerHTML="Esc";
-        buttonEsc.onclick = function()
-        {
-            productName.innerHTML = name;
-            productDescription.innerHTML = description;
-            productPrice.innerHTML = price;
-            buttonEsc.replaceWith(buttonTwo);
-            buttonOk.replaceWith(button);
-           
-        }
-}
-
+    index();
+   
 </script>
 @section Footer
 {
