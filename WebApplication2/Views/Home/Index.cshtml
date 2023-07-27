@@ -3,14 +3,16 @@
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_MyLayout";
-    var products = Model.Products;
- 
+  //  var products = Model.Products;
+   // var constId = 3;
+    
+    
 }
 <h1 class="text-center">Your Shop</h1>
 
 <div class="text-md-center">
 
-    <table>
+    <table id = "products" value = "@Model.Products">
         <tr>
             <th>id</th>
             <th>Название</th>
@@ -20,23 +22,6 @@
             <th>Действия</th>
             
         </tr>
-        
-        
-        
-        @for(var i =0; i< 20; i++)
-        {
-            <tr id = "tr_@(i)" hidden="hidden">
-                <td><div id="product_id_@(i)"></div></td>
-                <td><div id="product_name_@(i)"></div></td>
-                <td><div id="product_description_@(i)"></div></td>
-                <td><div id="product_price_@(i)"></div></td>
-                <td><div id="product_count_@(i)"></div></td>
-                <td>
-                    <button id = "button_one_@(i)" onclick = "onEdit(@i)">✎</button>
-                    <button onclick="deleteProduct(@i)">⌫</button>
-                </td>
-            </tr>
-        }        
         
     </table>
       
@@ -53,7 +38,7 @@
         <input id = "priceInput" type='number' name="price" value = ""><br>
         Количество:<br>
         <input id = "countInput" type='number' name="count" value=""><br>
-        <input id = "idInput" hidden="hidden" type='number' name="id" value="@(products.Count)"><br>
+        <input id = "idInput" hidden="hidden" type='number' name="id" value=""><br>
    
         <button onclick="addProduct()"> create</button>
     
@@ -62,28 +47,32 @@
 <script>
   
    
-   async function index()
+   async function ShowTable()
     {
-      
-           let response = await fetch(`Product/getProducts`, 
-           {
-               method: "GET",
-               headers: {
-                 'Content-Type': 'application/json;charset=utf-8'
-               },
+        let response = await fetch(`Product/getProducts`, 
+        {
+            method: "GET",
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            }  
+        });
+        
+        let model = await response.json();
+        for (let i = 0; i< model.length; i++)
+        {
+            let product = model[i];
+            updateTable(product);
+           // setProduct(product.id,product);
             
-           });
-           let model = await response.json();
-           await showProducts(model);
-           
+        }
+        
     }
        
    async function addProduct()
     {
+        let newProduct = createProduct();
         
-        let newProduct = CreateProduct();
-     
-        let response = await fetch(`Product/addProduct`, 
+        let response = await fetch(`product/addProduct`, 
         {
             method: "POST",
             headers: {
@@ -92,52 +81,32 @@
             body: JSON.stringify(newProduct)
         });
         let model = await response.json();
-        await showProducts(model);
+     
+        updateTable(model);
+        
         
     }
     
-    async function showProducts(model)
-    {
-         
-          for (let i = 0; i< model.length; i++)
-          {
-              let product = model[i];
-              let tr = document.getElementById(`tr_${i}`);
-              tr.hidden= false;
-              setProduct(i,product)
-             
-          }
-          
-    }
     
     async function deleteProduct(id)
     {
-        let response = await fetch(`Product/delete/${id}`, 
-             {
-                 method: "DELETE",
-                 headers: {
-                   'Content-Type': 'application/json;charset=utf-8'
-                 }
-                 
-             });
-        let tr = document.getElementById(`tr_${id}`);
-        tr.hidden = true;
-        
-            let model = await response.json();
-            await showProducts(model);
+         let deletedProduct = document.getElementById(`product_${id}`);
+         let table = document.getElementById(`products`);
+         
+         deletedProduct.innerText="";
+         
+         await fetch(`product/${id}`, 
+                {
+                    method: "DELETE",
+                    headers: {
+                      'Content-Type': 'application/json;charset=utf-8'
+                    }
+                    
+                });
+       
     }
        
-
-   
-    async function onRefresh(id){
-        
-        let response = await fetch(`Product/${id}`);
-        let product = await response.json();
-        
-        setProduct(id, product)
-    }
-    
-    function onEdit(id)
+    function onEdit(id) // создаем инпуты , переопределяем кнопки 
     {
        // создаем inputы
         createInput("name",id);
@@ -168,7 +137,7 @@
              
    }
         
-    async function onSendUpdateClick(id) 
+    async function onSendUpdateClick(id) //  обновляем продукт и возвращаем кнопки
     {
        let updatedProduct = getProduct(id);
        let response = await fetch(`product/${id}`, 
@@ -180,22 +149,27 @@
            body: JSON.stringify(updatedProduct)
        });
        
-       let updatedProductFromServer = await response.json();
-       setProduct(id, updatedProductFromServer)
-                      
-       let sendButton = document.getElementById(`send_button_${id}`);
+       await onRefresh(id);
        
+       let sendButton = document.getElementById(`send_button_${id}`); 
        let editButton = document.createElement("button");
        editButton.id = `button_one_${id}`;
        editButton.innerText = "✎";
        editButton.onclick = () => { onEdit(id); }
-       
        sendButton.replaceWith(editButton);
-       await onRefresh(id);
+      
    }
    
+    async function onRefresh(id)//обновляем продукт в таблице из БД
+    {
+            
+            let response = await fetch(`product/${id}`);
+            let product = await response.json();
+            
+            setProduct(id, product)
+        }
    
-    function setProduct(id, product)
+    function setProduct(id, product) // обновляем поля продукта из полей  
     {
         
         let productName = document.getElementById(`product_name_${id}`);
@@ -214,7 +188,7 @@
         productId.innerText = product.id;
     }
    
-    function getProduct(id)
+    function getProduct(id) // возвращаем продукт со значениями из таблицы
     {
         
          let productNameInput = document.getElementById(`product_name_input_${id}`);
@@ -238,7 +212,8 @@
          };
     }
     
-    function CreateProduct(){
+    function createProduct() // берем значения для нового продукта из инпутов 
+    {
         let nameInput = document.getElementById(`nameInput`);
         let name = nameInput.value;
         nameInput.value="";
@@ -254,8 +229,7 @@
         let countInput = document.getElementById(`countInput`);
         let count = countInput.value;
         countInput.value="";
-        //let idInput = document.getElementById(`idInput`);
-       // let id = idInput.value; 
+    
         return {
             name,
             description,
@@ -263,8 +237,37 @@
             count
             };
     }
-
-    index();
+    function updateTable(newProduct)
+    {
+        let id = newProduct.id;
+        let table= document.getElementById("products");
+        let newRow = table.insertRow(-1);
+        newRow.id = `product_${id}`;
+        
+        let idCell =  newRow.insertCell(0);
+        idCell.id = `product_id_${id}`;
+        idCell.innerText = id;
+        
+        let nameCell =  newRow.insertCell(1);
+        nameCell.id = `product_name_${id}`;
+        nameCell.innerText = newProduct.name;      
+        
+        let descriptionCell =  newRow.insertCell(2);
+        descriptionCell.id = `product_description_${id}`;
+        descriptionCell.innerText = newProduct.description;
+        
+        let priceCell =  newRow.insertCell(3);
+        priceCell.id = `product_price_${id}`;
+        priceCell.innerText = newProduct.price;        
+      
+        let countCell =  newRow.insertCell(4);
+        countCell.id = `product_count_${id}`;
+        countCell.innerText = newProduct.count;
+        
+        let actionCell =  newRow.insertCell(5);
+        actionCell.innerHTML = `<button id = "button_one_${id}" onclick = "onEdit(${id})">✎</button>`+` `+ `<button onclick="deleteProduct(${id})">⌫</button>`
+    }
+    ShowTable();
    
 </script>
 @section Footer

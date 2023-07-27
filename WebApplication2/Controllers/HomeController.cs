@@ -11,7 +11,7 @@ public class HomeController : Controller
     {   
         new Product {Id= 1, Name= "Властелин колец", Description = "Книга", Price = 1250.4, Count = 2},
         new Product {Id= 2, Name= "Остров Проклятых", Description = "Фильм", Price = 2000, Count = 12},
-        //new Product {Id= 3, Name= "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1}
+        new Product {Id= 3, Name= "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1}
     };
 
     private string[] productName =
