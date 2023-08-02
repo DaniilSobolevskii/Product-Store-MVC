@@ -1,9 +1,23 @@
+using System.Text.Json.Serialization;
+using WebApplication2.JsonConverters.Converters;
+using WebApplication2.JsonConverters.Policies;
+
 var MyAllowSpecificOrigins = "_MyAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCasePolicy();
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
+        options.JsonSerializerOptions.Converters.Add(new InfinityConverter());
+       // options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.AllowNamedFloatingPointLiterals;
+        options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter()); 
+        options.JsonSerializerOptions.Converters.Add(new EnumProductTypeConverter());
+    });
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,

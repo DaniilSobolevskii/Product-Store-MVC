@@ -20,7 +20,7 @@
             <th>Цена за штуку</th>
             <th>Количество</th>
             <th>Действия</th>
-            
+           
         </tr>
         
     </table>
@@ -38,8 +38,15 @@
         <input id = "priceInput" type='number' name="price" value = ""><br>
         Количество:<br>
         <input id = "countInput" type='number' name="count" value=""><br>
-        <input id = "idInput" hidden="hidden" type='number' name="id" value=""><br>
-   
+        <input id = "idInput" hidden="hidden" type= "number" name="id" value=""><br>
+    <select id="typeInput">
+        <option value="Undefined">-</option>
+        <option value="Movie">Фильм</option>
+        <option value="Book">Книга</option>
+        <option value="Accessories">Другое</option>
+    </select><br>
+       <br>
+        
         <button onclick="addProduct()"> create</button>
     
 </div>
@@ -171,7 +178,6 @@
    
     function setProduct(id, product) // обновляем поля продукта из полей  
     {
-        
         let productName = document.getElementById(`product_name_${id}`);
         productName.innerText = product.name;
         
@@ -184,8 +190,6 @@
         let productCount = document.getElementById(`product_count_${id}`);
         productCount.innerText = product.count;
         
-        let productId = document.getElementById(`product_id_${id}`);
-        productId.innerText = product.id;
     }
    
     function getProduct(id) // возвращаем продукт со значениями из таблицы
@@ -201,14 +205,16 @@
          let price =  productPriceInput.value;
          
          let productCountInput = document.getElementById(`product_count_input_${id}`);
-         let count= productCountInput.value;
-         
+         let count = productCountInput.value;
+       
          return {
+      
              id, 
              name,
              description,
              price,
-             count
+             count,
+             product_type: "Book"
          };
     }
     
@@ -229,12 +235,19 @@
         let countInput = document.getElementById(`countInput`);
         let count = countInput.value;
         countInput.value="";
+        
+        let typeInput = document.getElementById(`typeInput`);
+        let product_type =  typeInput.value;
+         
     
         return {
+            
+            product_type,
             name,
             description,
             price,
             count
+            
             };
     }
     function updateTable(newProduct)
@@ -264,8 +277,14 @@
         countCell.id = `product_count_${id}`;
         countCell.innerText = newProduct.count;
         
-        let actionCell =  newRow.insertCell(5);
+         let Cell =  newRow.insertCell(5);
+         Cell.innerText = newProduct.product_type;
+        
+        let actionCell =  newRow.insertCell(6);
         actionCell.innerHTML = `<button id = "button_one_${id}" onclick = "onEdit(${id})">✎</button>`+` `+ `<button onclick="deleteProduct(${id})">⌫</button>`
+        
+       
+               
     }
     ShowTable();
    

@@ -10,9 +10,9 @@ public class ProductController : ControllerBase
     private static int constId= 3;
     private static List<Product> _products = new()
     {
-        new Product { Id = 0, Name = "Властелин колец", Description = "Книга", Price = 1250.4, Count = 2 },
-        new Product { Id = 1, Name = "Остров Проклятых", Description = "Фильм", Price = 2000, Count = 12 },
-        new Product { Id = 2, Name = "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1 },
+        new Book() { Id = 0, Name = "Властелин колец", Description = "Книга", Price = 1250.4, Count = 2},
+        new Movie { Id = 1, Name = "Остров Проклятых", Description = "Фильм", Price = 2000, Count = 12},
+        new Accessories { Id = 2, Name = "Бойцовский клуб", Description = "Комикс", Price = 1300, Count = 1}
         
     };
     
@@ -24,6 +24,7 @@ public class ProductController : ControllerBase
             Products = _products
         };
         return model.Products;
+        
 
     }
 
@@ -36,11 +37,14 @@ public class ProductController : ControllerBase
     [HttpPost("{id}")]
     public Product UpdateProduct([FromRoute] int id, [FromBody] Product updatedProduct)
     {
-        _products.FirstOrDefault(x=>x.Id==id).Description = updatedProduct.Description;
-        _products.FirstOrDefault(x => x.Id == id).Count = updatedProduct.Count;
-        _products.FirstOrDefault(x => x.Id == id).Price = updatedProduct.Price;
-        _products.FirstOrDefault(x => x.Id == id).Name = updatedProduct.Name;
-        return _products[id];
+        var xProduct =_products.FirstOrDefault(x=>x.Id==id);
+            xProduct.Description = updatedProduct.Description;
+            xProduct.Count = updatedProduct.Count;
+            xProduct.Price = updatedProduct.Price;
+            xProduct.Name = updatedProduct.Name;
+
+
+            return xProduct;
     }
 
     [HttpDelete("{id}")]
