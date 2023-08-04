@@ -9,12 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
+        options.JsonSerializerOptions.Converters.Add(new EnumProductTypeConverter());
         options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCasePolicy();
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
         options.JsonSerializerOptions.Converters.Add(new InfinityConverter());
        // options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.AllowNamedFloatingPointLiterals;
         options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter()); 
-        options.JsonSerializerOptions.Converters.Add(new EnumProductTypeConverter());
+       
     });
 builder.Services.AddSwaggerGen();
 

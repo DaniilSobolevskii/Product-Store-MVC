@@ -34,17 +34,16 @@ public class ProductController : ControllerBase
         return _products.FirstOrDefault(x=>x.Id==id);
     }
 
+    
     [HttpPost("{id}")]
-    public Product UpdateProduct([FromRoute] int id, [FromBody] Product updatedProduct)
+    public void UpdateProduct([FromRoute] int id, [FromBody] Product updatedProduct)
     {
-        var xProduct =_products.FirstOrDefault(x=>x.Id==id);
-            xProduct.Description = updatedProduct.Description;
-            xProduct.Count = updatedProduct.Count;
-            xProduct.Price = updatedProduct.Price;
-            xProduct.Name = updatedProduct.Name;
-
-
-            return xProduct;
+        var xProduct = _products.FirstOrDefault(x => x.Id == id);
+        xProduct.Description = updatedProduct.Description;
+        xProduct.Count = updatedProduct.Count;
+        xProduct.Price = updatedProduct.Price;
+        xProduct.Name = updatedProduct.Name;
+        
     }
 
     [HttpDelete("{id}")]

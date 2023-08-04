@@ -8,9 +8,9 @@ public class EnumProductTypeConverter : JsonConverter<ProductType>
 {
     public override ProductType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string value = reader.GetString();
+        string? value = reader.GetString();
 
-        if (value=="Book")
+        if (value =="Book")
         {
             return ProductType.Book;
         }
