@@ -12,19 +12,43 @@
 </head>
 <body>
 <header>
- 
-        <h1>Другой Layout</h1>
-    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3">
+        
+        <div class="container-fluid">
+            <p>MyLayout</p>
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                        <H5>Products</H5></a>
+                    </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Customer">
+                        <H5>Customers</H5></a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Orders">
+                        <H5>Orders</H5></a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <H5>Privacy</H5></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </header>
 <div class="container">
     <main role="main" class="pb-3">
-        @RenderBody()
+         @RenderBody()
     </main>
 </div>
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        @await RenderSectionAsync("Footer", false) IsFaulted2023 - WebApplication2 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        @await RenderSectionAsync("Footer", false)  <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

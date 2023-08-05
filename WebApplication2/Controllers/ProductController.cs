@@ -8,6 +8,7 @@ namespace WebApplication2.Controllers;
 public class ProductController : ControllerBase
 {
     private static int constId= 3;
+    
     private static List<Product> _products = new()
     {
         new Book() { Id = 0, Name = "Властелин колец", Description = "Книга", Price = 1250.4, Count = 2},

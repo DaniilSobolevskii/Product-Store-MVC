@@ -73,7 +73,6 @@ public class HomeController : Controller
     public IActionResult UpgradeProduct(Product product)
     {
         var updateProduct = _products.FirstOrDefault(x => x.Id == product.Id);
-      //  var updateProduct =  _products[product.Id-1];
         updateProduct.Name = product.Name;
         updateProduct.Description = product.Description;
         updateProduct.Count = product.Count;
@@ -91,9 +90,16 @@ public class HomeController : Controller
         
         return RedirectToAction("Index");
     }
+
+    public IActionResult Customer()
+    {
+        return View();
+    }
     
-    
-    
+    public IActionResult Orders()
+    {
+        return View();
+    }
     
     public IActionResult Privacy()
     {

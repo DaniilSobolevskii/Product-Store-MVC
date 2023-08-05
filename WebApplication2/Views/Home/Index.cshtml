@@ -3,16 +3,13 @@
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_MyLayout";
-  //  var products = Model.Products;
-   // var constId = 3;
-    
-    
 }
-<h1 class="text-center">Your Shop</h1>
+
+<h4 class="text-center">Products</h4>
 
 <div class="text-md-center">
 
-    <table id = "products" value = "@Model.Products">
+    <table class="table primary table-striped" id = "products" value = "@Model.Products">
         <tr>
             <th>id</th>
             <th>Название</th>
@@ -20,6 +17,7 @@
             <th>Цена за штуку</th>
             <th>Количество</th>
             <th>Действия</th>
+            <th>Тип</th>
            
         </tr>
         
@@ -29,25 +27,41 @@
 
 <div class ="align-content-around">
     <br>
-    Название:<br>
-        
-        <input id = "nameInput"type='text' name="name" value=""><br>
-        Описание:<br>
-        <input id = "descriptionInput" type='text' name="description" value = ""><br>
-        Цена:<br>
-        <input id = "priceInput" type='number' name="price" value = ""><br>
-        Количество:<br>
-        <input id = "countInput" type='number' name="count" value=""><br>
+    <div class = "col-4">
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text" >Название</span>
+            <input  id = "nameInput" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text"> Описание</span>
+            <textarea  id = "descriptionInput" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></textarea>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text">Цена</span>
+            <input  id = "priceInput" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text" >Количество</span>
+            <input id = "countInput" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Тип продукта</label>
+            <select class="form-select" id="typeInput">
+                <option value="Undefined">-</option>
+                <option value="Movie">Фильм</option>
+                <option value="Book">Книга</option>
+                <option value="Accessories">Другое</option>
+            </select>
+        </div>
         <input id = "idInput" hidden="hidden" type= "number" name="id" value=""><br>
-    <select id="typeInput">
-        <option value="Undefined">-</option>
-        <option value="Movie">Фильм</option>
-        <option value="Book">Книга</option>
-        <option value="Accessories">Другое</option>
-    </select><br>
-       <br>
+    </div>
+      
+
+  
+
+    
         
-        <button onclick="addProduct()"> create</button>
+        <button onclick="addProduct()"> Сreate</button>
     
 </div>
 
@@ -147,7 +161,8 @@
     async function onSendUpdateClick(id) //  обновляем продукт и возвращаем кнопки
     {
        let updatedProduct = getProduct(id);
-       let response = await fetch(`product/${id}`, 
+       
+        await fetch(`product/${id}`, 
        {
            method: "POST",
            headers: {
@@ -156,7 +171,7 @@
            body: JSON.stringify(updatedProduct)
        });
        
-       await onRefresh(id);
+      await onRefresh(id);
        
        let sendButton = document.getElementById(`send_button_${id}`); 
        let editButton = document.createElement("button");
@@ -194,7 +209,6 @@
    
     function getProduct(id) // возвращаем продукт со значениями из таблицы
     {
-        
          let productNameInput = document.getElementById(`product_name_input_${id}`);
          let name = productNameInput.value;
          
@@ -206,6 +220,10 @@
          
          let productCountInput = document.getElementById(`product_count_input_${id}`);
          let count = productCountInput.value;
+         
+        let productType = document.getElementById(`product_type_${id}`);
+        let ProductType = productType.innerText;
+                
        
          return {
       
@@ -214,7 +232,7 @@
              description,
              price,
              count,
-             product_type: "Book"
+             product_type: ProductType
          };
     }
     
@@ -277,11 +295,12 @@
         countCell.id = `product_count_${id}`;
         countCell.innerText = newProduct.count;
         
-         let Cell =  newRow.insertCell(5);
-         Cell.innerText = newProduct.product_type;
+        let typeCell =  newRow.insertCell(5);
+        typeCell.id = `product_type_${id}`;
+        typeCell.innerText = newProduct.product_type;
         
         let actionCell =  newRow.insertCell(6);
-        actionCell.innerHTML = `<button id = "button_one_${id}" onclick = "onEdit(${id})">✎</button>`+` `+ `<button onclick="deleteProduct(${id})">⌫</button>`
+        actionCell.innerHTML = `<div  class="btn-group"><button id = "button_one_${id}" onclick = "onEdit(${id})">✎</button>`+` `+ `<button onclick="deleteProduct(${id})">⌫</button></div>`
         
        
                
