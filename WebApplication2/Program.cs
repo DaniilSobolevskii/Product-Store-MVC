@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using WebApplication2;
 using WebApplication2.JsonConverters.Converters;
 using WebApplication2.JsonConverters.Policies;
 
@@ -19,6 +21,13 @@ builder.Services.AddControllersWithViews()
     });
 builder.Services.AddSwaggerGen();
 
+/*var connection = builder.Configuration["DefaultConnection"];
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.LogTo(Console.Write);
+    options.UseMySQL(connection);
+});
+*/
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,

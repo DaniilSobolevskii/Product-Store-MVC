@@ -20,6 +20,8 @@ public class ProductController : ControllerBase
     [HttpGet("getProducts")]
     public List<Product> GetProducts()
     {
+      
+
         var model = new IndexModel
         {
             Products = _products

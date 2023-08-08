@@ -1,10 +1,11 @@
 ﻿using System.Runtime.Intrinsics.Arm;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication2.Models;
 
 
-public abstract class Product
+public abstract class Product 
 {
    [JsonPropertyOrder(1)]
    public int Id { get; set; }
