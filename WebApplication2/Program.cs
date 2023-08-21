@@ -26,8 +26,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.LogTo(Console.Write);
     options.UseMySQL(connection);
-});
-*/
+});*/
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -36,6 +36,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http:/example.com");
         });
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,10 +48,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 if (app.Environment.IsDevelopment())
- {
+{
      app.UseSwagger();
      app.UseSwaggerUI();
- }
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -2,11 +2,30 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
+using WebApplication2.Ado;
+
 namespace WebApplication2.Controllers;
 
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
+    private readonly IDataContext _dataContext;
+    public ProductController() {
+        var connectionStringBuilder = new MySqlConnectionStringBuilder {
+            Server = "localhost",
+            Database = "productsdb",
+            UserID = "root",
+            Password = "Volk5801"
+        };
+
+        //_dataContext = new RawSqlDataContext("Datasource=localhost;Database=shop;User=root;Password=root123;");
+        _dataContext = new AdoDataContext(connectionStringBuilder.ConnectionString);
+    }
+   
+   // private AppDbContext db = new AppDbContext();
+    
     private static int constId= 3;
     
     private static List<Product> _products = new()
@@ -18,14 +37,14 @@ public class ProductController : ControllerBase
     };
     
     [HttpGet("getProducts")]
-    public List<Product> GetProducts()
+    public IList<Product> GetProducts()
     {
-      
-
+        return _dataContext.SelectProducts();
         var model = new IndexModel
         {
             Products = _products
         };
+      //  db.Products.Add(_products);
         return model.Products;
         
 
@@ -34,19 +53,23 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public Product GetProduct([FromRoute] int id)
     {
+        return _dataContext.GetProduct(id);
         return _products.FirstOrDefault(x=>x.Id==id);
     }
 
     
     [HttpPost("{id}")]
-    public void UpdateProduct([FromRoute] int id, [FromBody] Product updatedProduct)
+    public void UpdateProduct([FromRoute] int id, [FromBody] Product updProduct)
     {
-        var xProduct = _products.FirstOrDefault(x => x.Id == id);
+   
+        var x =  _dataContext.UpdateProduct(id, updProduct);
+        
+       /* var xProduct = _products.FirstOrDefault(x => x.Id == id);
         xProduct.Description = updatedProduct.Description;
         xProduct.Count = updatedProduct.Count;
         xProduct.Price = updatedProduct.Price;
-        xProduct.Name = updatedProduct.Name;
-        
+        xProduct.Name = updatedProduct.Name;*/
+      
     }
 
     [HttpDelete("{id}")]
@@ -63,10 +86,11 @@ public class ProductController : ControllerBase
     [HttpPost("addProduct")]
     public Product AddProduct([FromBody] Product newProduct)
     {
-        newProduct.Id = constId;
+        var x = _dataContext.InsertProduct(newProduct);
+        /*newProduct.Id = constId;
         constId++;
-        _products.Add(newProduct);
-
+        _products.Add(newProduct);*/
+        newProduct.Id = x;
         return newProduct;
 
     }

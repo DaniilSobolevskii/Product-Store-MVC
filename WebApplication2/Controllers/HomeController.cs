@@ -90,16 +90,7 @@ public class HomeController : Controller
         
         return RedirectToAction("Index");
     }
-
-    public IActionResult Customer()
-    {
-        return View();
-    }
     
-    public IActionResult Orders()
-    {
-        return View();
-    }
     
     public IActionResult Privacy()
     {

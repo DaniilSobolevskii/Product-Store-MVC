@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Customer";
+    Layout = "_MyLayout";
+    var customers = ViewData.Model;
+}
+<h4 class="text-center">Customers</h4>
+<div>
+    <table class="table  table-striped  text-center">
+        <tr>
+            <th>id</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Возраст</th>
+            <th>Страна</th>
+            <th></th>
+        </tr>
+      @for (int i = 0; i < customers.Count; i++)
+             {
+                 <tr>
+                     <td><div id="id_text_@i">@customers[i].Id</div></td>
+                     <td><div id="firstName_text_@i">@customers[i].FirstName</div></td>
+                     <td><div id="lastName_text_@i">@customers[i].LastName</div></td>
+                     <td><div id="age_text_@i">@customers[i].Age</div></td>
+                     <td><div id="country_text_@i">@customers[i].Country</div></td>
+                     <td class="text-center">
+                         <button id="edit_button_@i" onclick="onEditClick(@i)">✎</button>
+                         <button onclick="onRefreshClick(@i)">⟳</button>
+                     </td>
+                 </tr>
+             }
+        
+    </table>
+</div><br>
+
+<div class="row">
+    <div class="col-8"></div>
+    <div class="col-4">
+        <form action="@Url.Action("")">
+            <button type="submit" class="btn-danger col-4 ">Товары</button>
+        </form>
+    </div>
+ 
+   
+   
+</div>
+
+
+
+<script>
+
+ async function onRefreshClick(i) {
+        let response = await fetch(`Customer/${i}`);
+        let customer = await response.json();
+        
+        setCustomer(i, customer);
+    }
+
+ function onEditClick(i) {
+     createInput(i, "firstName");
+     createInput(i, "lastName");
+     createInput(i, "age");
+     createInput(i, "country");
+     
+     let editButton = document.getElementById(`edit_button_${i}`);
+     
+     let sendButton = document.createElement("button");
+     sendButton.id = `send_button_${i}`;
+     sendButton.innerText = "✓";
+     sendButton.onclick = () => { onSendUpdateClick(i); }
+     
+     editButton.replaceWith(sendButton);
+ }
+ 
+ function createInput(i, elementName) {
+     let elementText = document.getElementById(`${elementName}_text_${i}`);
+     let elementInput = document.createElement("input");
+     elementInput.id = `${elementName}_input_${i}`;
+     elementInput.value = elementText.innerText;
+     elementText.innerHTML = "";
+     elementText.appendChild(elementInput);
+ }
+ 
+ async function onSendUpdateClick(id) {
+     let updatedCustomer = getCustomer(id);
+     let response = await fetch(`Customer/${id}`, {
+         method: "POST",
+         headers: {
+             'Content-Type': 'application/json;charset=utf-8'
+         },
+         body: JSON.stringify(updatedCustomer)
+     });
+     let updatedCustomerFromServer = await response.json();
+     
+     setCustomer(id, updatedCustomerFromServer );//FromServer);
+     
+     let sendButton = document.getElementById(`send_button_${id}`);
+     
+     let editButton = document.createElement("button");
+     editButton.id = `edit_button_${id}`;
+     editButton.innerText = "✎";
+     editButton.onclick = () => { onEditClick(id); }
+     
+     sendButton.replaceWith(editButton);
+ }
+ 
+ function setCustomer(id, customer) {
+     let firstNameText = document.getElementById(`firstName_text_${id}`);
+     firstNameText.innerText = customer.first_name;
+     
+     let lastNameText = document.getElementById(`lastName_text_${id}`);
+     lastNameText.innerText = customer.last_name;
+     
+     let ageText = document.getElementById(`age_text_${id}`);
+     ageText.innerText = customer.age;
+          
+     let countryText = document.getElementById(`country_text_${id}`);
+     countryText.innerText = customer.country;
+ }
+ 
+ function getCustomer(ids) {
+  
+     let nameInput = document.getElementById(`firstName_input_${ids}`);
+     let first_name = nameInput.value;
+     
+     let lastNameInput = document.getElementById(`lastName_input_${ids}`);
+     let last_name = lastNameInput.value;
+     
+     let ageInput = document.getElementById(`age_input_${ids}`);
+     let age = ageInput.value;
+     
+     let countryInput = document.getElementById(`country_input_${ids}`);
+     let country = countryInput.value;
+             
+     let idText = document.getElementById(`id_text_${ids}`);
+     let id = idText.innerText;
+     
+     return {
+         id, 
+         first_name, 
+         last_name,
+         age,
+         country
+     };
+ }
+</script>
+@section Footer
+{
+    Мой копирайтинг 
+}

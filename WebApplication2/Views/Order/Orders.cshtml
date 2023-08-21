@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Customer";
+    Layout = "_MyLayout";
+    var orders = ViewData.Model;
+}
+<h4 class="text-center">ORDERS</h4>
+<div>
+    <table class="table  table-striped  text-center">
+        <tr>
+            <th>id</th>
+            <th>Customer Id</th>
+            <th>Product Id</th>
+            <th>Count</th>
+            <th>Time</th>
+            <th></th>
+        </tr>
+      @for (int i = 0; i < orders.Count; i++)
+             {
+                 <tr>
+                     <td><div id="firstName_text_@i">@orders[i].Id</div></td>
+                     <td><div id="firstName_text_@i">@orders[i].CustomerId</div></td>
+                     <td><div id="lastName_text_@i">@orders[i].ProductId</div></td>
+                     <td><div id="age_text_@i">@orders[i].Count</div></td>
+                     <td><div id="country_text_@i">@orders[i].CreatedAt</div></td>
+                     <td class="text-center">
+                         <button id="edit_button_@i" onclick="onEditClick(@i)">✎</button>
+                         <button onclick="onRefreshClick(@i)">⟳</button>
+                     </td>
+                 </tr>
+             }
+        
+    </table>
+</div><br>
+
+@section Footer
+{
+    Мой копирайтинг 
+}
